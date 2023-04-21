@@ -97,6 +97,11 @@ class MainWindow(QMainWindow):
         
         # Load Machines
         self.machines: List[Machine] = []
+        
+        if not os.path.exists("netkit-lab.json"):
+            with open("netkit-lab.json", "w") as f:
+                f.write("[]")
+                            
         with open("netkit-lab.json") as f:
             for m in json.load(f):
                 machine = Machine(
