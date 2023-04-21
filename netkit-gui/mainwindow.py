@@ -156,6 +156,7 @@ class MainWindow(QMainWindow):
         self.current_machine_index = len(self.machines) - 1
         
         self.ui.machine_name_edit.setText("")
+        self.ui.startup_edit.setPlainText("")
         self.current_if_index = -1
         self.__clear_if_data()
         self.ui.interfaces.clear()
