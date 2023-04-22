@@ -17,13 +17,13 @@ from interfaces import Interface_Handler
 
 
 class MainWindow(QMainWindow):
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, path_to_json: str | None = None):
         super().__init__(parent)
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         
         self.interfaces = Interface_Handler(self.ui)
-        self.machines = Machine_Handler(self.ui, self.interfaces)
+        self.machines = Machine_Handler(self.ui, self.interfaces, path_to_json)
         self.machines.update_list()
         
         self.machines.set_read_only(True)
@@ -72,7 +72,7 @@ class MainWindow(QMainWindow):
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    widget = MainWindow()
+    widget = MainWindow(path_to_json=sys.argv[1])
     widget.show()
     
     code = app.exec()

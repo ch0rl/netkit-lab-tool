@@ -99,3 +99,4 @@ class Machine_Handler:
         self.if_handler.update_list()
         
         self.set_read_only(False)
+        self.if_handler.set_read_only(True)

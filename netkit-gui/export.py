@@ -56,7 +56,7 @@ class Export_Dialog(QDialog, Ui_Export_Dialog):
         s = ""
         
         for i in machine.interfaces:
-            s += f"ip a add {i.ip_addr} dev {i.name} \t# LAN: {i.lan}\n"
+            s += f"ip a add {i.ip_addr}/{i.mask} dev {i.name} \t# LAN: {i.lan}\n"
             s += f"ip link set up dev {i.name}\n"
             
         s += machine.custom_startup
