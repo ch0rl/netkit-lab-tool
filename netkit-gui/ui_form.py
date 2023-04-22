@@ -25,7 +25,7 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
-        MainWindow.resize(1113, 658)
+        MainWindow.resize(1146, 678)
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         self.gridLayout = QGridLayout(self.centralwidget)
@@ -44,6 +44,11 @@ class Ui_MainWindow(object):
         self.export_button.setObjectName(u"export_button")
 
         self.menu_layout.addWidget(self.export_button)
+
+        self.save_button = QPushButton(self.centralwidget)
+        self.save_button.setObjectName(u"save_button")
+
+        self.menu_layout.addWidget(self.save_button)
 
         self.settings_button = QToolButton(self.centralwidget)
         self.settings_button.setObjectName(u"settings_button")
@@ -207,7 +212,8 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"MainWindow", None))
         self.graph_button.setText(QCoreApplication.translate("MainWindow", u"Show Graph", None))
-        self.export_button.setText(QCoreApplication.translate("MainWindow", u"Export Lab", None))
+        self.export_button.setText(QCoreApplication.translate("MainWindow", u"Export Netkit Lab", None))
+        self.save_button.setText(QCoreApplication.translate("MainWindow", u"Save Lab", None))
         self.settings_button.setText(QCoreApplication.translate("MainWindow", u"Settings", None))
         self.label.setText(QCoreApplication.translate("MainWindow", u"Machine Name", None))
         self.machine_name_edit.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Name of the machine...", None))
