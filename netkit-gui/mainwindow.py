@@ -130,6 +130,8 @@ class MainWindow(QMainWindow):
                 self.machines.append(machine)
                 
         self.__update_machine_list()
+        self.__set_if_readonly(True)
+        self.ui.machine_name_edit.setReadOnly(True)
         
         # Hooks
         self.ui.update_button.clicked.connect(self.__update_machine_hook)
@@ -167,14 +169,19 @@ class MainWindow(QMainWindow):
             self.__update_machine_list()
             
     def __new_machine_hook(self):
+        self.ui.machine_name_edit.setReadOnly(False)
         self.machines.append(Machine())
         self.current_machine_index = len(self.machines) - 1
         
+        # Clear data
         self.ui.machine_name_edit.setText("")
         self.ui.startup_edit.setPlainText("")
         self.current_if_index = -1
         self.__clear_if_data()
         self.ui.interfaces.clear()
+        
+        # Set interface edits to read only until interface is changed
+        self.__set_if_readonly(True)
         
     def __delete_machine_hook(self):
         if self.current_machine_index >= 0:
@@ -185,6 +192,7 @@ class MainWindow(QMainWindow):
             self.__update_machine_list()
             
     def __change_machine_hook(self):
+        self.ui.machine_name_edit.setReadOnly(False)
         self.current_machine_index = self.ui.machine_list.currentIndex().row()
         
         m = self.machines[self.current_machine_index]
@@ -199,6 +207,12 @@ class MainWindow(QMainWindow):
         self.ui.lan_name_edit.setText("")
         self.ui.ip_address_edit.setText("")
         self.ui.netmask_edit.setText("")
+        
+    def __set_if_readonly(self, x: bool):
+        self.ui.interface_name_edit.setReadOnly(x)
+        self.ui.lan_name_edit.setReadOnly(x)
+        self.ui.ip_address_edit.setReadOnly(x)
+        self.ui.netmask_edit.setReadOnly(x)
         
     def __update_if_list(self):
         self.ui.interfaces.clear()
@@ -234,6 +248,8 @@ class MainWindow(QMainWindow):
         self.ui.lan_name_edit.setText(i.lan)
         self.ui.ip_address_edit.setText(i.ip_addr)
         self.ui.netmask_edit.setText(i.mask)
+        
+        self.__set_if_readonly(False)
             
     def __new_interface_hook(self):
         if self.current_machine_index >= 0:
@@ -241,6 +257,7 @@ class MainWindow(QMainWindow):
             self.current_if_index = len(self.machines[self.current_machine_index].interfaces) - 1
             
             self.__clear_if_data()
+            self.__set_if_readonly(False)
             
     def __graph_hook(self):
         graph = Graph()
