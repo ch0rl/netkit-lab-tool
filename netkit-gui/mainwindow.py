@@ -45,12 +45,15 @@ class Machine:
         
         
 class Export_Dialog(QDialog, Ui_Export_Dialog):
-    def __init__(self, parent: 'MainWindow'):
+    def __init__(self, parent: 'MainWindow', save_lab=False):
         super().__init__()
         self.setupUi(self)
         
         self.mainwindow = parent
-        self.buttonBox.accepted.connect(self.__export_hook)
+        if save_lab:
+            self.buttonBox.accepted.connect(self.__save_hook)
+        else:
+            self.buttonBox.accepted.connect(self.__export_hook)
         
     def __export_hook(self):
         # TODO: Validation
@@ -70,6 +73,17 @@ class Export_Dialog(QDialog, Ui_Export_Dialog):
                 for i in m.interfaces:
                     f.write(f"{m.name}[{i.name}]={i.lan}\n")
                     
+        # Close
+        self.close()
+        
+    def __save_hook(self):
+        # TODO: Validation
+        path = self.dir_edit.text()
+        os.makedirs(path, exist_ok=True)
+        
+        with open(os.path.join(path, "netkit-lab.json"), "w") as f:
+            json.dump([m.__repr__() for m in self.mainwindow.machines], f)
+            
         # Close
         self.close()
             
@@ -130,6 +144,7 @@ class MainWindow(QMainWindow):
         
         self.ui.graph_button.clicked.connect(self.__graph_hook)
         self.ui.export_button.clicked.connect(self.__export_hook)
+        self.ui.save_button.clicked.connect(self.__save_hook)
         
     def __clear_machine_data(self):
         self.ui.machine_name_edit.setText("")
@@ -240,6 +255,10 @@ class MainWindow(QMainWindow):
         
     def __export_hook(self):
         dialog = Export_Dialog(self)
+        dialog.exec()
+        
+    def __save_hook(self):
+        dialog = Export_Dialog(self, True)
         dialog.exec()
 
 
