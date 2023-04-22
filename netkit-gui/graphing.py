@@ -1,7 +1,7 @@
 import networkx
 from typing import List
-from mainwindow import Machine
 
+from _dataclasses import *
 
 class Graph(networkx.Graph):
     def __init__(self, *args, **kwargs):
