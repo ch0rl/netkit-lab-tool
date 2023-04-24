@@ -1,44 +1,62 @@
-from ui_form import Ui_MainWindow
+from mainwindow import MainWindow
+from errors import warn_ask
 from _dataclasses import *
 
 class Interface_Handler:
-    def __init__(self, ui: Ui_MainWindow):
-        self.ui = ui
+    def __init__(self, mainwindow: MainWindow):
+        self.mainwindow = mainwindow
         
         self.current_machine: Machine | None = None
         self.current_if: Interface | None = None
         
     def set_read_only(self, state: bool):
-        self.ui.interface_name_edit.setReadOnly(state)
-        self.ui.lan_name_edit.setReadOnly(state)
-        self.ui.ip_address_edit.setReadOnly(state)
-        self.ui.netmask_edit.setReadOnly(state)
+        self.mainwindow.ui.interface_name_edit.setReadOnly(state)
+        self.mainwindow.ui.lan_name_edit.setReadOnly(state)
+        self.mainwindow.ui.ip_address_edit.setReadOnly(state)
+        self.mainwindow.ui.netmask_edit.setReadOnly(state)
         
     def change_machine(self, new: Machine | None):
         self.current_if = None
         self.current_machine = new
         
     def clear(self):
-        self.ui.interface_name_edit.setText("")
-        self.ui.lan_name_edit.setText("")
-        self.ui.ip_address_edit.setText("")
-        self.ui.netmask_edit.setText("")
+        self.mainwindow.ui.interface_name_edit.setText("")
+        self.mainwindow.ui.lan_name_edit.setText("")
+        self.mainwindow.ui.ip_address_edit.setText("")
+        self.mainwindow.ui.netmask_edit.setText("")
 
     def update_list(self):
         if self.current_machine is not None:
-            self.ui.interfaces.clear()
+            self.mainwindow.ui.interfaces.clear()
             
             for m in self.current_machine.interfaces:
-                self.ui.interfaces.addItem(m.name)
+                self.mainwindow.ui.interfaces.addItem(m.name)
             
-    def save_changes(self):
+    def save_changes(self) -> bool:
         if self.current_if is not None:
-            self.current_if.name = self.ui.interface_name_edit.text()
-            self.current_if.lan = self.ui.lan_name_edit.text()
-            self.current_if.ip_addr = self.ui.ip_address_edit.text()
-            self.current_if.mask = self.ui.netmask_edit.text()
+            # Warn about same IP on same LAN
+            # Note: this is quite compute-heavy so maybe don't?
+            ip_addr = self.mainwindow.ui.ip_address_edit.text()
+            lan = self.mainwindow.ui.lan_name_edit.text()
+            for m in self.mainwindow.machines.machines:
+                for i in m.interfaces:
+                    if i.lan == lan and i.ip_addr == ip_addr:
+                        if not warn_ask(
+                            "IP Clash", f"Machine '{m.name}', on lan '{lan}', already has the IP '{ip_addr}'."
+                        ):
+                            return False
+            
+            self.current_if.name = self.mainwindow.ui.interface_name_edit.text()
+            self.current_if.lan = self.mainwindow.ui.lan_name_edit.text()
+            self.current_if.ip_addr = self.mainwindow.ui.ip_address_edit.text()
+            self.current_if.mask = self.mainwindow.ui.netmask_edit.text()
             
             self.update_list()
+            
+            return True
+        else:
+            # Updating with no interface is valid
+            return True
             
     def new(self):
         if self.current_machine is not None:
@@ -54,10 +72,10 @@ class Interface_Handler:
         
     def update_displayed(self):
         if self.current_if is not None:
-            self.ui.interface_name_edit.setText(self.current_if.name)
-            self.ui.lan_name_edit.setText(self.current_if.lan)
-            self.ui.ip_address_edit.setText(self.current_if.ip_addr)
-            self.ui.netmask_edit.setText(self.current_if.mask)
+            self.mainwindow.ui.interface_name_edit.setText(self.current_if.name)
+            self.mainwindow.ui.lan_name_edit.setText(self.current_if.lan)
+            self.mainwindow.ui.ip_address_edit.setText(self.current_if.ip_addr)
+            self.mainwindow.ui.netmask_edit.setText(self.current_if.mask)
         else:
             self.clear()
             
