@@ -1,8 +1,6 @@
 # This Python file uses the following encoding: utf-8
 import sys
-import os
 import json
-import matplotlib.pyplot as plt
 
 from PySide6.QtWidgets import QApplication, QMainWindow
 from ui_form import Ui_MainWindow
@@ -45,15 +43,9 @@ class MainWindow(QMainWindow):
         self.ui.save_button.clicked.connect(self.__save_hook)
             
     def __graph_hook(self):
-        graph = Graph()
+        graph = Graph(select_menu=True, filter_menu=True)
         graph.load_machines(self.machines.machines)
-        
-        networkx.drawing.nx_pylab.draw(graph, 
-            node_color=[n[1]["color"] for n in graph.nodes(data=True)],
-            with_labels=True
-        )
-        
-        plt.show()
+        graph.show("NetworkGraph.html", notebook=False)
         
     def __export_hook(self):
         dialog = Export_Dialog(self.machines.machines)
