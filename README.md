@@ -7,9 +7,11 @@ A GUI for generating Netkit labs.
 3. `pip install -r requirements.txt`
 
 ## Running
-`python netkit-gui/mainwindow.py`
+`python netkit-gui/mainwindow.py <path to json file>`
 
 ## TODO
+- [ ] Proper argument handling
+- [ ] Import lab
 - [ ] Output validation
 - [ ] Shortcuts
 - [ ] Settings
