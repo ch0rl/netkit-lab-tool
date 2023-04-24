@@ -105,7 +105,6 @@ class Machine_Handler:
         if self.save_changes():
             self.if_handler.clear()
             
-            # TODO: Validation
             self.current_machine = self.machines[new_index]
             self.if_handler.change_machine(self.current_machine)
             
