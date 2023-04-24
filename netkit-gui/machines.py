@@ -1,9 +1,11 @@
 import os
+import re
 import json
 
 from _dataclasses import *
 from interfaces import Interface_Handler
 from errors import show_err
+from patterns import *
 
 
 class Machine_Handler:
@@ -80,6 +82,11 @@ class Machine_Handler:
                 
                 return False
             else:
+                # Input validation
+                if re.match(NAME_PATTERN, name) is None:
+                    show_err("Validation Error", f"Input '{name}' does not match pattern '{NAME_PATTERN}'.")
+                    return False
+                
                 self.current_machine.name = name
                 self.current_machine.custom_startup = self.mainwindow.ui.startup_edit.toPlainText()
                 
