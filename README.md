@@ -10,7 +10,6 @@ A GUI for generating Netkit labs.
 `python netkit-gui/mainwindow.py`
 
 ## TODO
-- [ ] Input validation
 - [ ] Output validation
 - [ ] Shortcuts
 - [ ] Settings
