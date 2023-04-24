@@ -2,16 +2,16 @@ import os
 import json
 
 from _dataclasses import *
-from ui_form import Ui_MainWindow
+from mainwindow import MainWindow
 from interfaces import Interface_Handler
 from errors import show_err
 
 
 class Machine_Handler:
-    def __init__(self, ui: Ui_MainWindow, if_handler: Interface_Handler, 
+    def __init__(self, mainwindow: MainWindow, if_handler: Interface_Handler, 
                  path_to_json: str | None = None):
         
-        self.ui = ui
+        self.mainwindow = mainwindow
         self.if_handler = if_handler
         
         self.machines: List[Machine] = []
@@ -27,48 +27,52 @@ class Machine_Handler:
         # Check path exists
         if not os.path.exists(path):
             show_err("Path Error", f"Path '{path}' does not exist")            
-            self.ui.close()
-        
+            self.mainwindow.close()
+            
         with open(path) as f:
-            for m in json.load(f):
-                machine = Machine(
-                    m["name"], custom_startup=m["custom_startup"]
-                )
-                
-                for i in m["interfaces"]:
-                    machine.interfaces.append(Interface(
-                        i["name"], i["lan"], i["ip_addr"], i["mask"]
-                    ))
+            try:
+                for m in json.load(f):
+                    machine = Machine(
+                        m["name"], custom_startup=m["custom_startup"]
+                    )
                     
-                self.machines.append(machine)
+                    for i in m["interfaces"]:
+                        machine.interfaces.append(Interface(
+                            i["name"], i["lan"], i["ip_addr"], i["mask"]
+                        ))
+                        
+                    self.machines.append(machine)
+            except json.JSONDecodeError as e:
+                show_err("JSON Decode Error", e.msg)
+                self.mainwindow.close()
         
     def set_read_only(self, state: bool):
-        self.ui.machine_name_edit.setReadOnly(state)
-        self.ui.startup_edit.setReadOnly(state)
+        self.mainwindow.ui.machine_name_edit.setReadOnly(state)
+        self.mainwindow.ui.startup_edit.setReadOnly(state)
         
     def clear(self):
-        self.ui.machine_name_edit.setText("")
-        self.ui.startup_edit.setPlainText("")
+        self.mainwindow.ui.machine_name_edit.setText("")
+        self.mainwindow.ui.startup_edit.setPlainText("")
         
         self.if_handler.clear()
 
     def update_list(self):
-        self.ui.machine_list.clear()
+        self.mainwindow.ui.machine_list.clear()
         
         for m in self.machines:
-            self.ui.machine_list.addItem(m.name)
+            self.mainwindow.ui.machine_list.addItem(m.name)
             
     def save_changes(self) -> bool:
         if self.current_machine is not None:
             # Can't have duplicate machine names
-            name = self.ui.machine_name_edit.text()
+            name = self.mainwindow.ui.machine_name_edit.text()
             if any(x.name == name and x != self.current_machine for x in self.machines):
                 show_err("Duplicate Name", f"A machine with name '{name}' already exists.")
                 
                 return False
             else:
                 self.current_machine.name = name
-                self.current_machine.custom_startup = self.ui.startup_edit.toPlainText()
+                self.current_machine.custom_startup = self.mainwindow.ui.startup_edit.toPlainText()
                 
                 self.update_list()
                 
@@ -84,8 +88,8 @@ class Machine_Handler:
         
     def update_displayed(self):
         if self.current_machine is not None:
-            self.ui.machine_name_edit.setText(self.current_machine.name)
-            self.ui.startup_edit.setPlainText(self.current_machine.custom_startup)
+            self.mainwindow.ui.machine_name_edit.setText(self.current_machine.name)
+            self.mainwindow.ui.startup_edit.setPlainText(self.current_machine.custom_startup)
             
             self.if_handler.update_displayed()
         else:

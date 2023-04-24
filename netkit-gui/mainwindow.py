@@ -21,7 +21,7 @@ class MainWindow(QMainWindow):
         self.ui.setupUi(self)
         
         self.interfaces = Interface_Handler(self.ui)
-        self.machines = Machine_Handler(self.ui, self.interfaces, path_to_json)
+        self.machines = Machine_Handler(self, self.interfaces, path_to_json)
         self.machines.update_list()
         
         self.machines.set_read_only(True)
