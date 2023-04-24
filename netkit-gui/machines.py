@@ -1,9 +1,10 @@
+import os
 import json
-from PySide6.QtWidgets import QErrorMessage
 
 from _dataclasses import *
 from ui_form import Ui_MainWindow
 from interfaces import Interface_Handler
+from errors import show_err
 
 
 class Machine_Handler:
@@ -23,8 +24,12 @@ class Machine_Handler:
         self.current_machine: Machine | None = None
         
     def load_from_file(self, path: str):
+        # Check path exists
+        if not os.path.exists(path):
+            show_err("Path Error", f"Path '{path}' does not exist")            
+            self.ui.close()
+        
         with open(path) as f:
-            # TODO: Validation
             for m in json.load(f):
                 machine = Machine(
                     m["name"], custom_startup=m["custom_startup"]
@@ -58,9 +63,7 @@ class Machine_Handler:
             # Can't have duplicate machine names
             name = self.ui.machine_name_edit.text()
             if any(x.name == name and x != self.current_machine for x in self.machines):
-                err = QErrorMessage()
-                err.showMessage(f"A machine with name '{name}' already exists.")
-                err.exec()
+                show_err("Duplicate Name", f"A machine with name '{name}' already exists.")
                 
                 return False
             else:
