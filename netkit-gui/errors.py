@@ -1,4 +1,4 @@
-from PySide6.QtWidgets import QErrorMessage
+from PySide6.QtWidgets import QErrorMessage, QMessageBox
 
 
 def show_err(title: str, msg: str):
@@ -6,3 +6,10 @@ def show_err(title: str, msg: str):
     err.showMessage(msg)
     err.setWindowTitle(title)
     err.exec()
+
+
+def warn_ask(title: str, msg: str) -> bool:
+    win = QMessageBox(QMessageBox.Icon.Warning, title, msg, 
+                      QMessageBox.button.Cancel | QMessageBox.button.Ok)
+    
+    return win.exec() == QMessageBox.button.Ok
