@@ -16,6 +16,7 @@ class Export_Dialog(QDialog, Ui_Export_Dialog):
         
         if save_lab:
             self.buttonBox.accepted.connect(self.__save_hook)
+            self.setWindowTitle("Save Lab")
         else:
             self.buttonBox.accepted.connect(self.__export_hook)
         
