@@ -38,10 +38,11 @@ class Interface_Handler:
             ip_addr = self.mainwindow.ui.ip_address_edit.text()
             lan = self.mainwindow.ui.lan_name_edit.text()
             for m in self.mainwindow.machines.machines:
+                if m == self.current_machine: continue
                 for i in m.interfaces:
                     if i.lan == lan and i.ip_addr == ip_addr:
                         if not warn_ask(
-                            "IP Clash", f"Machine '{m.name}', on lan '{lan}', already has the IP '{ip_addr}'."
+                            "IP Clash", f"Machine '{m.name}', on lan '{lan}', already has the IP '{ip_addr}' - on interface '{i.name}'."
                         ):
                             return False
             

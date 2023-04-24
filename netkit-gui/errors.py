@@ -10,6 +10,6 @@ def show_err(title: str, msg: str):
 
 def warn_ask(title: str, msg: str) -> bool:
     win = QMessageBox(QMessageBox.Icon.Warning, title, msg, 
-                      QMessageBox.button.Cancel | QMessageBox.button.Ok)
+                      QMessageBox.StandardButton.Cancel | QMessageBox.StandardButton.Ok)
     
-    return win.exec() == QMessageBox.button.Ok
+    return win.exec() == QMessageBox.StandardButton.Ok
