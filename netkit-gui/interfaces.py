@@ -1,9 +1,8 @@
-from mainwindow import MainWindow
 from errors import warn_ask
 from _dataclasses import *
 
 class Interface_Handler:
-    def __init__(self, mainwindow: MainWindow):
+    def __init__(self, mainwindow):
         self.mainwindow = mainwindow
         
         self.current_machine: Machine | None = None
@@ -60,15 +59,14 @@ class Interface_Handler:
             
     def new(self):
         if self.current_machine is not None:
-            self.save_changes()
-            
-            self.current_if = Interface(name="unnamed")
-            self.current_machine.interfaces.append(self.current_if)
-            
-            self.update_displayed()
-            self.update_list()
-            
-            self.set_read_only(False)
+            if self.save_changes():
+                self.current_if = Interface(name="unnamed")
+                self.current_machine.interfaces.append(self.current_if)
+                
+                self.update_displayed()
+                self.update_list()
+                
+                self.set_read_only(False)
         
     def update_displayed(self):
         if self.current_if is not None:
@@ -91,10 +89,9 @@ class Interface_Handler:
             
     def change(self, new_index: int):
         if self.current_machine is not None:
-            self.save_changes()
-            
-            # TODO: Validation
-            self.current_if = self.current_machine.interfaces[new_index]
-            
-            self.update_displayed()
-            self.set_read_only(False)
+            if self.save_changes():
+                # TODO: Validation
+                self.current_if = self.current_machine.interfaces[new_index]
+                
+                self.update_displayed()
+                self.set_read_only(False)

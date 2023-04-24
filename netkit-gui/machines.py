@@ -2,13 +2,12 @@ import os
 import json
 
 from _dataclasses import *
-from mainwindow import MainWindow
 from interfaces import Interface_Handler
 from errors import show_err
 
 
 class Machine_Handler:
-    def __init__(self, mainwindow: MainWindow, if_handler: Interface_Handler, 
+    def __init__(self, mainwindow, if_handler: Interface_Handler, 
                  path_to_json: str | None = None):
         
         self.mainwindow = mainwindow
