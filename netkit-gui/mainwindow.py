@@ -20,7 +20,7 @@ class MainWindow(QMainWindow):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         
-        self.interfaces = Interface_Handler(self.ui)
+        self.interfaces = Interface_Handler(self)
         self.machines = Machine_Handler(self, self.interfaces, path_to_json)
         self.machines.update_list()
         
