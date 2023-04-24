@@ -32,11 +32,21 @@ class Machine_Handler:
         with open(path) as f:
             try:
                 for m in json.load(f):
+                    if "name" not in m or "custom_startup" not in m or "interfaces" not in m:
+                        show_err("Invalid JSON", 
+                                 f"""Machine '{json.dumps(m)}' must have "name", "custom_startup", and "interfaces".""")
+                        self.mainwindow.close()
+                    
                     machine = Machine(
                         m["name"], custom_startup=m["custom_startup"]
                     )
                     
                     for i in m["interfaces"]:
+                        if "name" not in i or "lan" not in i or "ip_addr" not in i or "mask" not in i:
+                            show_err("Invalid JSON", 
+                                     f"""Interface '{json.dumps(i)}' must have "name", "lan", "ip_addr", and "mask".""")
+                            self.mainwindow.close()
+                        
                         machine.interfaces.append(Interface(
                             i["name"], i["lan"], i["ip_addr"], i["mask"]
                         ))
