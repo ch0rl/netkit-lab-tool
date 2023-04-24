@@ -1,4 +1,5 @@
 import json
+from PySide6.QtWidgets import QErrorMessage
 
 from _dataclasses import *
 from ui_form import Ui_MainWindow
@@ -52,12 +53,26 @@ class Machine_Handler:
         for m in self.machines:
             self.ui.machine_list.addItem(m.name)
             
-    def save_changes(self):
+    def save_changes(self) -> bool:
         if self.current_machine is not None:
-            self.current_machine.name = self.ui.machine_name_edit.text()
-            self.current_machine.custom_startup = self.ui.startup_edit.toPlainText()
-            
-            self.update_list()
+            # Can't have duplicate machine names
+            name = self.ui.machine_name_edit.text()
+            if any(x.name == name and x != self.current_machine for x in self.machines):
+                err = QErrorMessage()
+                err.showMessage(f"A machine with name '{name}' already exists.")
+                err.exec()
+                
+                return False
+            else:
+                self.current_machine.name = name
+                self.current_machine.custom_startup = self.ui.startup_edit.toPlainText()
+                
+                self.update_list()
+                
+                return True
+        else:
+            # Saving to no current machine is valid
+            return True
             
     def new(self):
         self.machines.append(Machine(name="unnamed"))
@@ -87,16 +102,15 @@ class Machine_Handler:
             self.set_read_only(True)
             
     def change(self, new_index: int):
-        self.save_changes()
-        self.if_handler.save_changes()
-        self.if_handler.clear()
-        
-        # TODO: Validation
-        self.current_machine = self.machines[new_index]
-        self.if_handler.change_machine(self.current_machine)
-        
-        self.update_displayed()
-        self.if_handler.update_list()
-        
-        self.set_read_only(False)
-        self.if_handler.set_read_only(True)
+        if self.save_changes():
+            self.if_handler.clear()
+            
+            # TODO: Validation
+            self.current_machine = self.machines[new_index]
+            self.if_handler.change_machine(self.current_machine)
+            
+            self.update_displayed()
+            self.if_handler.update_list()
+            
+            self.set_read_only(False)
+            self.if_handler.set_read_only(True)
