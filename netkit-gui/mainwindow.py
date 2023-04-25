@@ -1,6 +1,7 @@
 # This Python file uses the following encoding: utf-8
 import sys
 import json
+import argparse
 
 from PySide6.QtWidgets import QApplication, QMainWindow
 from ui_form import Ui_MainWindow
@@ -62,15 +63,21 @@ class MainWindow(QMainWindow):
         self.interfaces.change(self.ui.interfaces.currentRow())
 
 
+ARG_PARSER = argparse.ArgumentParser(add_help=True)
+ARG_PARSER.add_argument("-p", "--path", required=False, default="./netkit-lab.json", 
+                        help="the path to the JSON file containing the lab")
+
 if __name__ == "__main__":
+    args = ARG_PARSER.parse_args()
+    
     app = QApplication(sys.argv)
-    widget = MainWindow(path_to_json=sys.argv[1])
+    widget = MainWindow(path_to_json=args.path)
     widget.show()
     
     code = app.exec()
 
     # Exited
-    with open("netkit-lab.json", "w") as f:
+    with open(args.path, "w") as f:
         json.dump([m.__repr__() for m in widget.machines.machines], f)
         
     sys.exit(code)
