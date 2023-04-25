@@ -10,7 +10,6 @@ A GUI for generating Netkit labs.
 `python netkit-gui/mainwindow.py <path to json file>`
 
 ## TODO
-- [ ] Proper argument handling
 - [ ] Import lab
 - [ ] Output validation
 - [ ] Shortcuts
