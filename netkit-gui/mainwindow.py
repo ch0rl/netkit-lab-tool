@@ -17,10 +17,19 @@ from interfaces import Interface_Handler
 
 class MainWindow(QMainWindow):
     def __init__(self, parent=None, path_to_json: str | None = None):
+        """Subclass of the auto-generated main window
+        
+        Args:
+            parent: parent object to pass to super().__init__
+            path_to_json: path to the json file
+        """
+        
+        # Setup UI
         super().__init__(parent)
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         
+        # Setup machines and interfaces
         self.interfaces = Interface_Handler(self)
         self.machines = Machine_Handler(self, self.interfaces, path_to_json)
         self.machines.update_list()

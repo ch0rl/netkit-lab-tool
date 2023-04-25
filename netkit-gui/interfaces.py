@@ -6,28 +6,50 @@ from patterns import *
 
 class Interface_Handler:
     def __init__(self, mainwindow):
+        """A class to handle interface interactions
+        
+        Args:
+            mainwindow: the mainwindow.MainWindow object that uses this handler
+        """
+        
         self.mainwindow = mainwindow
         
         self.current_machine: Machine | None = None
         self.current_if: Interface | None = None
         
     def set_read_only(self, state: bool):
+        """Sets interface inputs' read-only state
+        
+        Args:
+            state: the state to set
+        """
+        
         self.mainwindow.ui.interface_name_edit.setReadOnly(state)
         self.mainwindow.ui.lan_name_edit.setReadOnly(state)
         self.mainwindow.ui.ip_address_edit.setReadOnly(state)
         self.mainwindow.ui.netmask_edit.setReadOnly(state)
         
     def change_machine(self, new: Machine | None):
+        """Change the current machine in use
+        
+        Args:
+            new: the new machine
+        """
+        
         self.current_if = None
         self.current_machine = new
         
     def clear(self):
+        """Sets all interface inputs to an empty string"""
+        
         self.mainwindow.ui.interface_name_edit.setText("")
         self.mainwindow.ui.lan_name_edit.setText("")
         self.mainwindow.ui.ip_address_edit.setText("")
         self.mainwindow.ui.netmask_edit.setText("")
 
     def update_list(self):
+        """Updates the displayed list of interfaces to represent the stored list"""
+        
         if self.current_machine is not None:
             self.mainwindow.ui.interfaces.clear()
             
@@ -35,6 +57,12 @@ class Interface_Handler:
                 self.mainwindow.ui.interfaces.addItem(m.name)
             
     def save_changes(self) -> bool:
+        """Saves inputted values to the current interface
+        
+        Returns:
+            bool: whether the save worked or not (ie., if tests passed)
+        """
+        
         if self.current_if is not None:
             # Warn about same IP on same LAN
             # Note: this is quite compute-heavy so maybe don't?
@@ -76,6 +104,8 @@ class Interface_Handler:
             return True
             
     def new(self):
+        """Creates a new interface, adds it to the current machine, and switches to it"""
+        
         if self.current_machine is not None:
             if self.save_changes():
                 self.current_if = Interface(name="unnamed")
@@ -87,6 +117,8 @@ class Interface_Handler:
                 self.set_read_only(False)
         
     def update_displayed(self):
+        """Updates the displayed values to represent the current interface"""
+        
         if self.current_if is not None:
             self.mainwindow.ui.interface_name_edit.setText(self.current_if.name)
             self.mainwindow.ui.lan_name_edit.setText(self.current_if.lan)
@@ -96,6 +128,8 @@ class Interface_Handler:
             self.clear()
             
     def delete_current(self):
+        """Deletes the current interface"""
+        
         if self.current_if is not None and self.current_machine is not None:
             self.current_machine.interfaces.remove(self.current_if)
             self.current_if = None
@@ -106,6 +140,12 @@ class Interface_Handler:
             self.set_read_only(True)
             
     def change(self, new_index: int):
+        """Changes the current interface to that at new_index
+        
+        Args:
+            new_index: the index of the new interface
+        """
+        
         if self.current_machine is not None:
             if self.save_changes():
                 # TODO: Validation

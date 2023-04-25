@@ -12,6 +12,14 @@ class Machine_Handler:
     def __init__(self, mainwindow, if_handler: Interface_Handler, 
                  path_to_json: str | None = None):
         
+        """A class to handle interactions with machines
+        
+        Args:
+            mainwindow: the mainwindow.MainWindow object that uses this handler
+            if_handler: the interfaces.Interface_Handler object in use
+            path_to_json: the path to the JSON file of the lab
+        """
+        
         self.mainwindow = mainwindow
         self.if_handler = if_handler
         
@@ -25,6 +33,12 @@ class Machine_Handler:
         self.current_machine: Machine | None = None
         
     def load_from_file(self, path: str):
+        """Loads machines from a lab file
+        
+        Args:
+            path: the path to the JSON file
+        """
+        
         # Check path exists
         if not os.path.exists(path):
             show_err("Path Error", f"Path '{path}' does not exist")            
@@ -33,6 +47,7 @@ class Machine_Handler:
         with open(path) as f:
             try:
                 for m in json.load(f):
+                    # Validate and load machine info
                     if "name" not in m or "custom_startup" not in m or "interfaces" not in m:
                         show_err("Invalid JSON", 
                                  f"""Machine '{json.dumps(m)}' must have "name", "custom_startup", and "interfaces".""")
@@ -42,6 +57,7 @@ class Machine_Handler:
                         m["name"], custom_startup=m["custom_startup"]
                     )
                     
+                    # Validate and load interfaces
                     for i in m["interfaces"]:
                         if "name" not in i or "lan" not in i or "ip_addr" not in i or "mask" not in i:
                             show_err("Invalid JSON", 
@@ -53,27 +69,45 @@ class Machine_Handler:
                         ))
                         
                     self.machines.append(machine)
+                    
             except json.JSONDecodeError as e:
+                # Show error then close
                 show_err("JSON Decode Error", e.msg)
                 self.mainwindow.close()
         
     def set_read_only(self, state: bool):
+        """Sets machine inputs' read-only state
+        
+        Args:
+            state: the state to set
+        """
+        
         self.mainwindow.ui.machine_name_edit.setReadOnly(state)
         self.mainwindow.ui.startup_edit.setReadOnly(state)
         
     def clear(self):
+        """Sets all machine inputs to an empty string"""
+        
         self.mainwindow.ui.machine_name_edit.setText("")
         self.mainwindow.ui.startup_edit.setPlainText("")
         
         self.if_handler.clear()
 
     def update_list(self):
+        """Updates the displayed list of machines to represent the stored list"""
+        
         self.mainwindow.ui.machine_list.clear()
         
         for m in self.machines:
             self.mainwindow.ui.machine_list.addItem(m.name)
             
     def save_changes(self) -> bool:
+        """Saves inputted values to the current machine
+        
+        Returns:
+            bool: whether the save worked or not (ie., if tests passed)
+        """
+        
         if self.current_machine is not None:
             # Can't have duplicate machine names
             name = self.mainwindow.ui.machine_name_edit.text()
@@ -98,11 +132,15 @@ class Machine_Handler:
             return True
             
     def new(self):
+        """Creates a new machine, adds it to the list, and switches to it"""
+        
         self.machines.append(Machine(name="unnamed"))
         self.change(len(self.machines) - 1)
         self.update_list()
         
     def update_displayed(self):
+        """Updates the displayed values to represent the current machine"""
+        
         if self.current_machine is not None:
             self.mainwindow.ui.machine_name_edit.setText(self.current_machine.name)
             self.mainwindow.ui.startup_edit.setPlainText(self.current_machine.custom_startup)
@@ -112,6 +150,8 @@ class Machine_Handler:
             self.clear()
             
     def delete_current(self):
+        """Deletes the current machine"""
+        
         if self.current_machine is not None:
             self.machines.remove(self.current_machine)
             self.current_machine = None
@@ -125,6 +165,12 @@ class Machine_Handler:
             self.set_read_only(True)
             
     def change(self, new_index: int):
+        """Changes the current machine to that at new_index
+        
+        Args:
+            new_index: the index of the new interface
+        """
+        
         if self.save_changes():
             self.if_handler.clear()
             
